@@ -1,0 +1,59 @@
+<!-- File: C:\Users\91999\Desktop\Fasal Documents\landmarket\lands\templates\lands\about.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}About Us - LandMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">About LandMarket</h1>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Our Mission</h3>
+                    <p class="card-text">At LandMarket, we're revolutionizing the way people buy and sell land. Our mission is to create a transparent, efficient, and trustworthy platform that connects buyers and sellers directly, eliminating unnecessary intermediaries and reducing transaction costs.</p>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Why Choose Us?</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Transparent pricing and no hidden fees</li>
+                                <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Verified land listings with legal documentation</li>
+                                <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Secure communication between buyers and sellers</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Advanced search filters to find your perfect plot</li>
+                                <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Mobile-friendly platform accessible anywhere</li>
+                                <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Dedicated customer support team</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Our Team</h3>
+                    <p class="card-text">LandMarket was founded by a team of real estate professionals and technology experts who saw the need for a better way to buy and sell land. With decades of combined experience in real estate, law, and software development, we've built a platform that addresses the pain points of traditional land transactions.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Join Our Community</h3>
+                    <p class="card-text">Whether you're looking to buy your dream plot or sell your land quickly and efficiently, LandMarket is here to help. Join thousands of satisfied users who have found success through our platform.</p>
+                    <a href="{% url 'signup' %}" class="btn btn-primary">Get Started Today</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

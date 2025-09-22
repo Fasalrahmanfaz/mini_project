@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}My Inquiries - LandMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1>My Inquiries</h1>
+            <p class="text-muted">These are inquiries received for your land listings.</p>
+            
+            {% if inquiries %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inquiry in inquiries %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'land_detail' inquiry.land.slug %}">{{ inquiry.land.title|truncatewords:5 }}</a>
+                                </td>
+                                <td>{{ inquiry.name }}</td>
+                                <td>{{ inquiry.email }}</td>
+                                <td>{{ inquiry.phone }}</td>
+                                <td>{{ inquiry.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if inquiry.is_read %}
+                                        <span class="badge bg-success">Read</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">New</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="mailto:{{ inquiry.email }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-envelope"></i> Reply
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-envelope-open fa-3x text-muted mb-3"></i>
+                    <h4>No inquiries received yet.</h4>
+                    <p class="text-muted">When buyers send inquiries about your listings, they will appear here.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

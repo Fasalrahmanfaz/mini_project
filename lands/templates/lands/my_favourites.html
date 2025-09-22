@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}My Favorites - LandMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1>My Favorite Lands</h1>
+            
+            {% if favorites %}
+                <div class="row">
+                    {% for favorite in favorites %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="position-relative">
+                                {% if favorite.land.images.exists %}
+                                    <img src="{{ favorite.land.images.first.image.url }}" class="card-img-top land-image" alt="{{ favorite.land.title }}">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top land-image" alt="No image">
+                                {% endif %}
+                                <span class="badge bg-{{ favorite.land.status == 'available' ? 'success' : favorite.land.status == 'pending' ? 'warning' : 'secondary' }} badge-status">
+                                    {{ favorite.land.get_status_display }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title">{{ favorite.land.title|truncatewords:6 }}</h6>
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-map-marker-alt"></i> {{ favorite.land.city }}, {{ favorite.land.state }}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price-tag">₹{{ favorite.land.price|floatformat:0 }}</span>
+                                    <span class="text-muted">{{ favorite.land.area|floatformat:0 }} sq.ft</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'land_detail' favorite.land.slug %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    <a href="{% url 'toggle_favorite' favorite.land.slug %}" class="btn btn-sm btn-outline-danger">Remove</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                    <h4>You haven't added any lands to favorites yet.</h4>
+                    <p class="text-muted">Browse lands and click the heart icon to save your favorites.</p>
+                    <a href="{% url 'land_list' %}" class="btn btn-primary mt-3">
+                        <i class="fas fa-search"></i> Browse Lands
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

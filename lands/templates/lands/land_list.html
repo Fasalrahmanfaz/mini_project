@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Lands - LandMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Browse Lands for Sale</h1>
+            
+            <!-- Search Form -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Search</label>
+                            <input type="text" name="query" class="form-control" value="{{ request.GET.query|default:'' }}" placeholder="Title, Location, City...">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Land Type</label>
+                            <select name="land_type" class="form-select">
+                                <option value="">All Types</option>
+                                <option value="agricultural" {% if request.GET.land_type == 'agricultural' %}selected{% endif %}>Agricultural</option>
+                                <option value="residential" {% if request.GET.land_type == 'residential' %}selected{% endif %}>Residential</option>
+                                <option value="commercial" {% if request.GET.land_type == 'commercial' %}selected{% endif %}>Commercial</option>
+                                <option value="industrial" {% if request.GET.land_type == 'industrial' %}selected{% endif %}>Industrial</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Min Price</label>
+                            <input type="number" name="min_price" class="form-control" value="{{ request.GET.min_price|default:'' }}" placeholder="Min Price">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Max Price</label>
+                            <input type="number" name="max_price" class="form-control" value="{{ request.GET.max_price|default:'' }}" placeholder="Max Price">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Min Area</label>
+                            <input type="number" name="min_area" class="form-control" value="{{ request.GET.min_area|default:'' }}" placeholder="Min Area">
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Results Info -->
+            <div class="mb-4">
+                <p class="mb-0"><strong>{{ total_count }}</strong> properties found</p>
+            </div>
+            
+            <!-- Properties Grid -->
+            {% if page_obj %}
+                <div class="row">
+                    {% for land in page_obj %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="position-relative">
+                                {% if land.images.all|length %}
+                                    <img src="{{ land.images.all.0.image.url }}" class="card-img-top land-image" alt="{{ land.title }}">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top land-image" alt="No image">
+                                {% endif %}
+                                <span class="badge bg-{% if land.status == 'available' %}success{% elif land.status == 'pending' %}warning{% else %}secondary{% endif %} badge-status">
+                                    {{ land.get_status_display }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title">{{ land.title|truncatewords:6 }}</h6>
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-map-marker-alt"></i> {{ land.city }}, {{ land.state }}
+                                </p>
+                                <p class="card-text">{{ land.description|truncatewords:10 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price-tag">₹{{ land.price|floatformat:0 }}</span>
+                                    <span class="text-muted">{{ land.area|floatformat:0 }} sq.ft</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a href="{% url 'land_detail' land.slug %}" class="btn btn-primary w-100">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            No lands found matching your criteria.
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }} <span class="sr-only">(current)</span></span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    No lands available at the moment.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

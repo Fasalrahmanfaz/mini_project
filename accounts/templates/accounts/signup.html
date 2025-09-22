@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Sign Up - LandMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Create Your Account</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.username|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.email|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.first_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.last_name|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.password1|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.password2|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <h5>Profile Information</h5>
+                        {{ profile_form.phone|as_crispy_field }}
+                        {{ profile_form.address|as_crispy_field }}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ profile_form.city|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ profile_form.state|as_crispy_field }}
+                            </div>
+                        </div>
+                        {{ profile_form.pincode|as_crispy_field }}
+                        {{ profile_form.user_type|as_crispy_field }}
+                        
+                        <div class="form-group">
+                            <label for="{{ profile_form.profile_picture.id_for_label }}">Profile Picture (Optional)</label>
+                            {{ profile_form.profile_picture }}
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Create Account</button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-3">
+                        <p>Already have an account? <a href="{% url 'login' %}">Log in here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

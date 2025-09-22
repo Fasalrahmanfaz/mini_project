@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - LandMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1>Welcome, {{ user.get_full_name|default:user.username }}!</h1>
+            <p class="lead">Here's your LandMarket dashboard. Manage your listings, view inquiries, and track your activity.</p>
+            
+            <div class="row mt-4">
+                <!-- My Listings Card -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-home fa-3x text-primary mb-3"></i>
+                            <h5>My Listings</h5>
+                            <p class="text-muted">Manage your land listings</p>
+                            <a href="{% url 'my_listings' %}" class="btn btn-primary">View Listings</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- My Favorites Card -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                            <h5>My Favorites</h5>
+                            <p class="text-muted">Lands you've saved</p>
+                            <a href="{% url 'my_favorites' %}" class="btn btn-primary">View Favorites</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- My Inquiries Card -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-envelope fa-3x text-success mb-3"></i>
+                            <h5>My Inquiries</h5>
+                            <p class="text-muted">Inquiries on your listings</p>
+                            <a href="{% url 'my_inquiries' %}" class="btn btn-primary">View Inquiries</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <!-- Profile Card -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5>Profile Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-4">
+                                    {% if user.profile.profile_picture %}
+                                        <img src="{{ user.profile.profile_picture.url }}" class="img-fluid rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                            <span class="fs-1">{{ user.username|first|upper }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-8">
+                                    <h5>{{ user.get_full_name|default:user.username }}</h5>
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-envelope"></i> {{ user.email }}
+                                    </p>
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-user-tag"></i> {{ user.profile.get_user_type_display }}
+                                    </p>
+                                    <a href="{% url 'profile' %}" class="btn btn-sm btn-outline-primary">Edit Profile</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions Card -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5>Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'add_land' %}" class="btn btn-success">
+                                    <i class="fas fa-plus"></i> Add New Land Listing
+                                </a>
+                                <a href="{% url 'land_list' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-search"></i> Browse Lands
+                                </a>
+                                <a href="{% url 'logout' %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

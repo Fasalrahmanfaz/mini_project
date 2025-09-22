@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ land.title }} - LandMarket{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gallery-thumbs {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding: 10px 0;
+        margin-bottom: 20px;
+    }
+    
+    .gallery-thumbs img {
+        width: 80px;
+        height: 60px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border-color 0.3s;
+    }
+    
+    .gallery-thumbs img.active {
+        border-color: #27ae60;
+    }
+    
+    .map-container {
+        height: 300px;
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Main Image -->
+            <div class="card mb-4">
+                {% if land.images.all|length %}
+                    <img src="{{ land.images.all.0.image.url }}" id="main-image" class="card-img-top" alt="{{ land.title }}" style="height: 400px; object-fit: cover;">
+                {% else %}
+                    <img src="https://via.placeholder.com/800x400?text=No+Image" id="main-image" class="card-img-top" alt="No image" style="height: 400px; object-fit: cover;">
+                {% endif %}
+            </div>
+            
+            <!-- Thumbnail Gallery -->
+            {% if land.images.all|length > 1 %}
+            <div class="gallery-thumbs">
+                {% for image in land.images.all %}
+                <img src="{{ image.image.url }}" class="thumb-img {% if forloop.first %}active{% endif %}" data-src="{{ image.image.url }}" alt="Thumbnail {{ forloop.counter }}">
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Map -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Location</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Address:</strong> {{ land.location }}, {{ land.city }}, {{ land.state }} - {{ land.pincode }}</p>
+                    {% if land.latitude and land.longitude %}
+                        <div id="map" class="map-container">
+                            Loading map...
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            Map location not available for this property.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Description</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ land.description }}</p>
+                </div>
+            </div>
+            
+            <!-- Documents -->
+            {% if land.documents.all|length %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Documents</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for doc in land.documents.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ doc.title }}</span>
+                            <a href="{{ doc.document.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Property Info Card -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="price-tag mb-3">₹{{ land.price|floatformat:0 }}</h4>
+                    <table class="table table-borderless mb-0">
+                        <tr>
+                            <td><strong>Type:</strong></td>
+                            <td>{{ land.get_land_type_display }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Area:</strong></td>
+                            <td>{{ land.area|floatformat:0 }} sq.ft</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Status:</strong></td>
+                            <td>
+                                {% if land.status == 'available' %}
+                                    <span class="badge bg-success">Available</span>
+                                {% elif land.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Sold</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Posted By:</strong></td>
+                            <td>{{ land.seller.get_full_name|default:land.seller.username }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Posted On:</strong></td>
+                            <td>{{ land.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    {% if user.is_authenticated and user == land.seller %}
+                        <a href="{% url 'edit_land' land.slug %}" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-edit"></i> Edit Listing
+                        </a>
+                        <a href="{% url 'delete_land' land.slug %}" class="btn btn-danger w-100 mb-2">
+                            <i class="fas fa-trash"></i> Delete Listing
+                        </a>
+                    {% else %}
+                        {% if land.status == 'available' %}
+                            <a href="{% url 'inquiry' land.slug %}" class="btn btn-primary w-100 mb-2">
+                                <i class="fas fa-envelope"></i> Send Inquiry
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'toggle_favorite' land.slug %}" class="btn btn-outline-{{ is_favorite|yesno:'danger,primary' }} w-100">
+                            <i class="fas fa-heart"></i> 
+                            {{ is_favorite|yesno:'Remove from Favorites,Add to Favorites' }}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Contact Seller</h5>
+                </div>
+                <div class="card-body">
+                    <p>Contact the seller through our secure inquiry system to protect your privacy.</p>
+                    <p>All communications will be recorded for security purposes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Properties -->
+    {% if related_lands %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Related Properties</h3>
+            <div class="row">
+                {% for related_land in related_lands %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="position-relative">
+                            {% if related_land.images.all|length %}
+                                <img src="{{ related_land.images.all.0.image.url }}" class="card-img-top land-image" alt="{{ related_land.title }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top land-image" alt="No image">
+                            {% endif %}
+                            <span class="badge bg-success badge-status">{{ related_land.get_land_type_display }}</span>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title">{{ related_land.title|truncatewords:5 }}</h6>
+                            <p class="text-muted small mb-2">
+                                <i class="fas fa-map-marker-alt"></i> {{ related_land.city }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price-tag">₹{{ related_land.price|floatformat:0 }}</span>
+                                <a href="{% url 'land_detail' related_land.slug %}" class="btn btn-sm btn-outline-primary">View</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Thumbnails script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const thumbs = document.querySelectorAll('.thumb-img');
+    const mainImage = document.getElementById('main-image');
+    
+    if (thumbs && mainImage) {
+        thumbs.forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                thumbs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                mainImage.src = this.dataset.src;
+            });
+        });
+    }
+});
+</script>
+
+<!-- Google Maps (included only if coords exist) -->
+{% if land.latitude and land.longitude %}
+<script>
+window.initMap = function() {
+    try {
+        const lat = parseFloat('{{ land.latitude }}');
+        const lng = parseFloat('{{ land.longitude }}');
+        if (isNaN(lat) || isNaN(lng)) {
+            document.getElementById('map').innerHTML = '<div class="text-warning p-3">Invalid coordinates.</div>';
+            return;
+        }
+        const propertyLocation = { lat: lat, lng: lng };
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: propertyLocation
+        });
+        new google.maps.Marker({
+            position: propertyLocation,
+            map: map,
+            title: "{{ land.title|escapejs }}"
+        });
+    } catch (e) {
+        console.error('Map init error:', e);
+        document.getElementById('map').innerHTML = '<div class="text-danger p-3">Error loading map.</div>';
+    }
+};
+</script>
+<script defer async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao&libraries=places&callback=initMap"></script>
+{% endif %}
+{% endblock %}

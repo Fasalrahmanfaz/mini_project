@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}My Listings - LandMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>My Listings</h1>
+                <a href="{% url 'add_land' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Listing
+                </a>
+            </div>
+            
+            {% if lands %}
+                <div class="row">
+                    {% for land in lands %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="position-relative">
+                                {% if land.images.exists %}
+                                    <img src="{{ land.images.first.image.url }}" class="card-img-top land-image" alt="{{ land.title }}">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top land-image" alt="No image">
+                                {% endif %}
+                                <span class="badge bg-{{ land.status == 'available' ? 'success' : land.status == 'pending' ? 'warning' : 'secondary' }} badge-status">
+                                    {{ land.get_status_display }}
+                                </span>
+                                {% if land.featured %}
+                                <span class="badge bg-warning position-absolute top-0 start-0">Featured</span>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title">{{ land.title|truncatewords:6 }}</h6>
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-map-marker-alt"></i> {{ land.city }}, {{ land.state }}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price-tag">₹{{ land.price|floatformat:0 }}</span>
+                                    <span class="text-muted">{{ land.area|floatformat:0 }} sq.ft</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'land_detail' land.slug %}" class="btn btn-sm btn-outline-primary">View</a>
+                                    <a href="{% url 'edit_land' land.slug %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a href="{% url 'delete_land' land.slug %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-home fa-3x text-muted mb-3"></i>
+                    <h4>You haven't listed any lands yet.</h4>
+                    <p class="text-muted">Click the "Add New Listing" button above to get started.</p>
+                    <a href="{% url 'add_land' %}" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus"></i> Add Your First Listing
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

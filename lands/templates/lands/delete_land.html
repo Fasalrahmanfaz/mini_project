@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Land - LandMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3>Delete Land Listing</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Are you sure?</h4>
+                        <p>This action cannot be undone. This will permanently delete the land listing titled "<strong>{{ land.title }}</strong>".</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Listing Details</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item"><strong>Title:</strong> {{ land.title }}</li>
+                            <li class="list-group-item"><strong>Price:</strong> ₹{{ land.price|floatformat:0 }}</li>
+                            <li class="list-group-item"><strong>Area:</strong> {{ land.area|floatformat:0 }} sq.ft</li>
+                            <li class="list-group-item"><strong>Location:</strong> {{ land.city }}, {{ land.state }}</li>
+                        </ul>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'land_detail' land.slug %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-danger">Delete Permanently</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

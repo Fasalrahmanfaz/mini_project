@@ -1,0 +1,30 @@
+<!-- File: C:\Users\91999\Desktop\landmarket\accounts\templates\accounts\logout_confirm.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Logout - LandMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3>Confirm Logout</h3>
+                </div>
+                <div class="card-body">
+                    <p>Are you sure you want to log out?</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-danger">Yes, Log Me Out</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
