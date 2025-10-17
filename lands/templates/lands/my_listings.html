@@ -24,7 +24,12 @@
                                 {% else %}
                                     <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top land-image" alt="No image">
                                 {% endif %}
-                                <span class="badge bg-{{ land.status == 'available' ? 'success' : land.status == 'pending' ? 'warning' : 'secondary' }} badge-status">
+                                <span class="badge 
+                                    {% if land.status == 'available' %}bg-success
+                                    {% elif land.status == 'pending' %}bg-warning
+                                    {% else %}bg-secondary
+                                    {% endif %}
+                                    badge-status">
                                     {{ land.get_status_display }}
                                 </span>
                                 {% if land.featured %}
